@@ -1,0 +1,101 @@
+
+import java.util.*;
+
+public class 오픈채팅방 { 
+                                                                            //방법1: Hashmap을 통해 효율적으로 품.  2*O(n)
+    public static String[] solution2(String[] record) {
+     
+       HashMap<String, String> map = new HashMap<String, String>();
+        int count = 0;
+
+        for(int i=0; i<record.length; i++) {
+            if(record[i].charAt(0) == 'L')  continue;
+            else if(record[i].charAt(0) == 'C') count++;
+            map.put(record[i].split(" ")[1], record[i].split(" ")[2]);
+        }
+
+        String[] result = new String[record.length - count];
+        int index = 0;
+
+        for(int i=0; i<record.length; i++) {
+            if(record[i].charAt(0) == 'E') {
+                result[index++] = map.get(record[i].split(" ")[1]) + "님이 들어왔습니다.";
+            }else if(record[i].charAt(0) == 'L') {
+                result[index++] = map.get(record[i].split(" ")[1]) + "님이 나갔습니다.";
+            }
+        }
+
+        return result;
+    }
+    
+    
+                                                                                 //방법2: class를 만들어, list에 넣어서 찾아오는 방식 -> 시간 초과 뜬다 O(n)^2
+    class User{
+        String userId;
+        String nickname;
+        public User(String id, String name){
+            this.userId = id;
+            this.nickname = name;
+        }
+
+        void changeNickname(String newNickname){
+            this.nickname = newNickname;
+        }
+    }
+
+    public User findUser(String userId, List<User> users){
+        for(User user: users){
+            if(user.userId.equals(userId)) {
+                return user;
+            }
+        }
+        return null;
+    }
+    public String[] solution(String[] record) {
+        List<User> users = new LinkedList<>(); //유저 아이디와 닉네임을 저장하기 위함.
+        List<String> order = new LinkedList<>(); //enter leave 순서를 넣기 위함.
+
+        for(int i = 0; i < record.length; i++){
+            String[] words = record[i].split(" ");
+            String userId = words[1];
+            switch (words[0]){
+                case "Enter":
+                    order.add("님이 들어왔습니다.");
+                    User user;
+                    if(users.isEmpty()|| findUser(userId, users) == null){  //새로운 userId이면 user를 새로 만든다.
+                        user = new User(userId, words[2]);
+                    }else{              //기존에 있던 userId이면 nickname만 바꿔준다.
+                        user = findUser(userId, users);
+                       user.changeNickname(words[2]);
+                    }
+                    users.add(user);
+                    break;
+
+                case "Leave":
+                    order.add("님이 나갔습니다.");
+                    User leavingUser = findUser(userId,users);
+                    users.add(leavingUser);
+                    break;
+
+                case "Change":
+                    User changeNickUser = findUser(userId, users);
+                    changeNickUser.changeNickname(words[2]);
+                    break;
+            }
+
+        }
+
+        String[] answers = new String[users.size()];
+        for(int i = 0; i < users.size(); i++){
+            answers[i] = users.get(i).nickname+order.get(i);
+            System.out.println(answers[i]);
+        }
+        return answers;
+    }
+
+
+    public static void main(String[] args) {
+        오픈채팅방 test = new 오픈채팅방();
+        test.solution(new String[]{"Enter uid1234 Muzi", "Enter uid4567 Prodo","Leave uid1234","Enter uid1234 Prodo","Change uid4567 Ryan"});
+    }
+}
