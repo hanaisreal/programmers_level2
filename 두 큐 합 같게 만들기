@@ -1,0 +1,52 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class 두큐합같게만들기 {
+    public int solution(int[] queue1, int[] queue2) {
+        //각 큐의 합 구하기
+        long sum1 = 0, sum2 = 0;
+        for(int i = 0; i < queue1.length; i++){
+            sum1 += queue1[i];
+            sum2 += queue2[i];
+        }
+
+        //queue에 집어넣기
+        Queue<Integer> q1 = new LinkedList<>();
+        Queue<Integer> q2 = new LinkedList<>();
+        for(int i = 0; i < queue1.length; i++){
+            q1.offer(queue1[i]);
+            q2.offer(queue2[i]);
+        }
+
+        //greedy 알고리즘 활용.
+        int count = 0;
+        while(true){
+            if( count > queue1.length*3) {
+                count = -1; break;
+            }
+            if(sum1 == sum2) break;
+
+            else if(sum1 > sum2) {
+                int num = q1.poll();
+                q2.offer(num);
+                count++;
+                sum1 -= num;
+                sum2 += num;
+            }else{
+                int num = q2.poll();
+                q1.offer(num);
+                count++;
+                sum2 -= num;
+                sum1 += num;
+            }
+        }
+        System.out.println(count);
+        return count;
+    }
+
+    public static void main(String[] args) {
+        두큐합같게만들기 test = new 두큐합같게만들기();
+        test.solution(new int[]{3,2,7,2}, new int[]{4,6,5,1});  //2
+        test.solution(new int[]{1,2,1,2}, new int[]{1,10,1,2});  //7
+    }
+}
