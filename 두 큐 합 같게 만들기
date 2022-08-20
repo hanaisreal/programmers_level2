@@ -21,7 +21,7 @@ public class 두큐합같게만들기 {
         //greedy 알고리즘 활용.
         int count = 0;
         while(true){
-            if( count > queue1.length*3) {
+            if( count > queue1.length*queue1.length/2) {  
                 count = -1; break;
             }
             if(sum1 == sum2) break;
